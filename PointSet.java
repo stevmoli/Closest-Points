@@ -47,8 +47,8 @@ public class PointSet {
         xRight[i] = xArr[xArrTraverse++];
       }
 
-      Point2D.Double[] yLeft = mergeSortStart(xLeft, "y");
-      Point2D.Double[] yRight = mergeSortStart(xRight, "y");
+      Point2D.Double[] yLeft = mergeSortStart(xLeft.clone(), "y");
+      Point2D.Double[] yRight = mergeSortStart(xRight.clone(), "y");
 
       PointPair closestLeftPair = cp(xLeft, yLeft);
       PointPair closestRightPair = cp(xRight, yRight);
@@ -62,47 +62,73 @@ public class PointSet {
       }
       //TODO ^ could deal with point pairs that are equal distances away here
 
+      System.out.println("##### ENTERING TROUBLE ZONE #####");
       // Now we will look for closer points accross the partition
-      double d = closest.getDistance(); // shortest distance between pair so far
+      double d = Math.abs(closest.getDistance()); // shortest distance between pair so far
+      System.out.println("d is now "+d);
       ArrayList<Point2D.Double> yPrime = new ArrayList<Point2D.Double>(); // will store points close to the division
       int division = xLeft.length-1;
+      System.out.println("***Here is xArr:");
+      for(int i = 0; i < xArr.length; i++) {
+        System.out.println(xArr[i]);
+      }
+      System.out.println("*** end of xArr");
+      System.out.println("Division point is "+xArr[division]);
+      System.out.println("First point to the left of division point is "+xArr[division-1]);
 
       // checking for points within d distance to the left of the partition, and adding any that are found to yPrime
       int currentX = division-1; // this variable will keep track of when we are no longer looking within d distance of the partition
-      while (currentX >= (division-d) && currentX >= 0) {
-        if (xArr[currentX].getX() >= (division-d)) {
-          yPrime.add(xArr[currentX]);
-        }
+      System.out.println("Checking if xArr[currentX] x value  "+xArr[currentX].getX()+" is >= xArr[division].getX()-d which is "+(xArr[division].getX()-d));
+      System.out.println("xArr length is "+xArr.length);
+      while ((currentX >= 0) && (xArr[currentX].getX() >= (xArr[division].getX()-d))) {
+        //if (xArr[currentX].getX() >= (xArr[division].getX()-d)) {
+          //if (xArr[currentX].getX() >= (division-d)) {
+            yPrime.add(xArr[currentX]);
+            System.out.println("Considering (leftwise) "+xArr[currentX]);
+          //}
+        //}
         currentX--;
+        System.out.println("About to resume while loop. currentX is "+currentX);
       }
 
       // now checking for points within d distance to the right of the partition
       currentX = division+1;
-      while (currentX <= (division+d) && currentX <= xArr.length-1) {
-        if (xArr[currentX].getX() <= (division-d)) {
+      System.out.println("Now to check if xArr[currentX] x value  "+xArr[currentX].getX()+" is <= xArr[division].getX()+d which is "+(xArr[division].getX()+d));
+      while ((currentX <= xArr.length-1) && (xArr[currentX].getX() <= (xArr[division].getX()+d))) {  //TODO IMPLEMENT STUFF I JUST DID FOR X SECTION ABOVE
+        //if (xArr[currentX].getX() <= (division-d)) {
           yPrime.add(xArr[currentX]);
-        }
+          System.out.println("Considering (rightwise) "+xArr[currentX]);
+        //}
         currentX++;
+        System.out.println("About to resume while loop. currentX is "+currentX);
       }
 
+      yPrime.add(xArr[division]);
+      System.out.println("&&&&& EXITING TROUBLE ZONE &&&&&");
       // now that we have all of the points within d distance of the partition (in terms of x), we want to change the arraylist yPrime into an array
       Point2D.Double yPrimeArr[] = yPrime.toArray(new Point2D.Double[yPrime.size()]);
 
       // we want this array sorted in terms of y
       yPrimeArr = mergeSortStart(yPrimeArr, "y");
+      System.out.println("$$$$$$$$$$ Here comes yPrimeArr $$$$$$$$$$");
+      for (int i = 0; i < yPrimeArr.length; i++) {
+        System.out.println(yPrimeArr[i]);
+      }
+      System.out.println("$$$$$$$$$$ End of yPrime Arr $$$$$$$$$$");
 
       // now we check each point in this array for any that are closer to it than distance d
-      System.out.println("d is "+d+" and yPrimeArr length is "+yPrimeArr.length);
+      //System.out.println("d is "+d+" and yPrimeArr length is "+yPrimeArr.length);
       if (yPrimeArr.length > 1) {
         for (int i = 0; i < yPrimeArr.length-1; i++){
-          System.out.println("upper for loop point is "+yPrimeArr[i]);
+          //System.out.println("upper for loop point is "+yPrimeArr[i]);
           int j = i+1;
           while ((j <= yPrimeArr.length-1) && (yPrimeArr[j].getY() <= (yPrimeArr[i].getY()+d))) {
             System.out.println("yPrimeArr[j] is "+yPrimeArr[j]+" and j is "+j);
             PointPair currentPair = new PointPair(yPrimeArr[i], yPrimeArr[j]);
             if(currentPair.closerThan(closest) <1 ) {
               closest = currentPair;
-              d = closest.getDistance();
+              d = Math.abs(closest.getDistance());
+              System.out.println("d is now "+d);
             }
             j++;
           }
@@ -112,14 +138,8 @@ public class PointSet {
 
       //TODO remember to normalize the solution
       //TODO search for and fix all todo's
-      //TODO remove the below test code
       return closest;
     }
-
-
-
-    // PointPair test = new PointPair(new Point2D.Double(1, 3), new Point2D.Double(3, 1));
-    // return test;  //THIS IS TEST CODE
 
   }
 
