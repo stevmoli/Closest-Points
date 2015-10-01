@@ -40,13 +40,71 @@ public class PointSet {
       }
       return bruteForce(xArr);  // using brute force if the number of points is small
     } else {
-      
+      Point2D.Double[] xLeft = new Point2D.Double[xArr.length/2];
+      int xArrTraverse = 0;
+      for (int i = 0; i < xLeft.length; i++) {
+        xLeft[i] = xArr[xArrTraverse++];
+      }
+
+      Point2D.Double[] xRight = new Point2D.Double[xArr.length - (xArr.length/2)];
+      for (int i = 0; i < xRight.length; i++) {
+        xRight[i] = xArr[xArrTraverse++];
+      }
+
+      Point2D.Double[] yLeft = mergeSortStart(xLeft, "y");
+      Point2D.Double[] yRight = mergeSortStart(xRight, "y");
+
+      PointPair closestLeftPair = cp(xLeft, yLeft);
+      PointPair closestRightPair = cp(xRight, yRight);
+
+      PointPair closest = new PointPair(new Point2D.Double(0, 0), new Point2D.Double(1, 1)); // initialize variable that will hold the closest of the point pairs
+
+      if (closestLeftPair.closerThan(closestRightPair) < 1) {
+        closest = closestLeftPair;
+      } else {
+        closest = closestRightPair;
+      }
+      //TODO ^ could deal with point pairs that are equal distances away here
+
+      // // Now we will look for closer points accross the partition
+      // double d = closest.getDistance(); // shortest distance between pair so far
+      // ArrayList<Point2D.Double> yPrime = new ArrayList<Point2D.Double>(); // will store points close to the division
+      // int division = xLeft.length-1;
+      //
+      // // checking for points within d distance to the left of the partition, and adding any that are found to yPrime
+      // int currentX = division-1; // this variable will keep track of when we are no longer looking within d distance of the partition
+      // while (currentX >= (division-d)) {
+      //   if (xArr[currentX].getX() >= (division-d)) {
+      //     yPrime.add(xArr[currentX]);
+      //   }
+      //   currentX--;
+      // }
+      //
+      // // now checking for points within d distance to the right of the partition
+      // currentX = division+1;
+      // while (currentX <= (division+d)) {
+      //   if (xArr[currentX].getX() <= (division-d)) {
+      //     yPrime.add(xArr[currentX]);
+      //   }
+      //   currentX++;
+      // }
+      //
+      // // now that we have all of the points within d distance of the partition (in terms of x), we want to change the arraylist yPrime into an array
+      // Point2D.Double yPrimeArr[] = yPrime.toArray(new Point2D.Double[yPrime.size()]);
+
+
+
+      //TODO remember to normalize the solution
+      //TODO search for and fix all todo's
+      //TODO remove the below test code
+      return closest;
     }
 
-    //TODO remember to normalize the solution
 
-    PointPair test = new PointPair(new Point2D.Double(1, 3), new Point2D.Double(3, 1));
-    return test;  //THIS IS TEST CODE
+
+    // PointPair test = new PointPair(new Point2D.Double(1, 3), new Point2D.Double(3, 1));
+    // return test;  //THIS IS TEST CODE
+
   }
 
   // finds the closest pair of a given set of points by checking each pair of points
@@ -73,6 +131,7 @@ public class PointSet {
     return result;
 
   }
+
 
 
   // Merge Sort code begins
