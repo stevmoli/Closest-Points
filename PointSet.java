@@ -34,18 +34,48 @@ public class PointSet {
 
   public static PointPair cp(java.awt.geom.Point2D.Double[] xArr, java.awt.geom.Point2D.Double[] yArr) {
     if (Math.abs(xArr.length) <= 3) {
-
+      System.out.println("Brute force with the following array:");
+      for (int i = 0; i < xArr.length; i++) {
+        System.out.println(xArr[i]);
+      }
+      return bruteForce(xArr);  // using brute force if the number of points is small
+    } else {
+      
     }
+
+    //TODO remember to normalize the solution
 
     PointPair test = new PointPair(new Point2D.Double(1, 3), new Point2D.Double(3, 1));
     return test;  //THIS IS TEST CODE
   }
 
+  // finds the closest pair of a given set of points by checking each pair of points
+  public static PointPair bruteForce(java.awt.geom.Point2D.Double[] pts) {
+    boolean first = true; // to allow for a one-time automatic store of the distance of the first pair examined
+    PointPair result = new PointPair(pts[0], pts[1]);
+
+    for (int i = 0; i < pts.length; i++) {
+      for (int j = 0; j <pts.length; j++) {
+        if (i != j) {
+          PointPair tempPair = new PointPair(pts[i], pts[j]);
+          if (first == false && tempPair.closerThan(result) < 0) {
+            //TODO if distance is equal, save both into PointPair array to check against any result found?
+            result = tempPair;
+          }
+          if (first == true) {
+            result = tempPair;
+            first = false;
+          }
+        }
+      }
+    }
+
+    return result;
+
+  }
 
 
-
-
-// Merge Sort code begins
+  // Merge Sort code begins
   public static Point2D.Double[] mergeSortStart(java.awt.geom.Point2D.Double[] pts, String param) {
     Point2D.Double[] tempArray = new Point2D.Double[pts.length];
     mergeSort(pts, tempArray, 0, pts.length-1, param);
