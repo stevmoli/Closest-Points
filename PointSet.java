@@ -34,10 +34,6 @@ public class PointSet {
 
   public static PointPair cp(java.awt.geom.Point2D.Double[] xArr, java.awt.geom.Point2D.Double[] yArr) {
     if (Math.abs(xArr.length) <= 3) {
-      System.out.println("Brute force with the following array:");
-      for (int i = 0; i < xArr.length; i++) {
-        System.out.println(xArr[i]);
-      }
       return bruteForce(xArr);  // using brute force if the number of points is small
     } else {
       Point2D.Double[] xLeft = new Point2D.Double[xArr.length/2];
@@ -66,32 +62,52 @@ public class PointSet {
       }
       //TODO ^ could deal with point pairs that are equal distances away here
 
-      // // Now we will look for closer points accross the partition
-      // double d = closest.getDistance(); // shortest distance between pair so far
-      // ArrayList<Point2D.Double> yPrime = new ArrayList<Point2D.Double>(); // will store points close to the division
-      // int division = xLeft.length-1;
-      //
-      // // checking for points within d distance to the left of the partition, and adding any that are found to yPrime
-      // int currentX = division-1; // this variable will keep track of when we are no longer looking within d distance of the partition
-      // while (currentX >= (division-d)) {
-      //   if (xArr[currentX].getX() >= (division-d)) {
-      //     yPrime.add(xArr[currentX]);
-      //   }
-      //   currentX--;
-      // }
-      //
-      // // now checking for points within d distance to the right of the partition
-      // currentX = division+1;
-      // while (currentX <= (division+d)) {
-      //   if (xArr[currentX].getX() <= (division-d)) {
-      //     yPrime.add(xArr[currentX]);
-      //   }
-      //   currentX++;
-      // }
-      //
-      // // now that we have all of the points within d distance of the partition (in terms of x), we want to change the arraylist yPrime into an array
-      // Point2D.Double yPrimeArr[] = yPrime.toArray(new Point2D.Double[yPrime.size()]);
+      // Now we will look for closer points accross the partition
+      double d = closest.getDistance(); // shortest distance between pair so far
+      ArrayList<Point2D.Double> yPrime = new ArrayList<Point2D.Double>(); // will store points close to the division
+      int division = xLeft.length-1;
 
+      // checking for points within d distance to the left of the partition, and adding any that are found to yPrime
+      int currentX = division-1; // this variable will keep track of when we are no longer looking within d distance of the partition
+      while (currentX >= (division-d) && currentX >= 0) {
+        if (xArr[currentX].getX() >= (division-d)) {
+          yPrime.add(xArr[currentX]);
+        }
+        currentX--;
+      }
+
+      // now checking for points within d distance to the right of the partition
+      currentX = division+1;
+      while (currentX <= (division+d) && currentX <= xArr.length-1) {
+        if (xArr[currentX].getX() <= (division-d)) {
+          yPrime.add(xArr[currentX]);
+        }
+        currentX++;
+      }
+
+      // now that we have all of the points within d distance of the partition (in terms of x), we want to change the arraylist yPrime into an array
+      Point2D.Double yPrimeArr[] = yPrime.toArray(new Point2D.Double[yPrime.size()]);
+
+      // we want this array sorted in terms of y
+      yPrimeArr = mergeSortStart(yPrimeArr, "y");
+
+      // now we check each point in this array for any that are closer to it than distance d
+      System.out.println("d is "+d+" and yPrimeArr length is "+yPrimeArr.length);
+      if (yPrimeArr.length > 1) {
+        for (int i = 0; i < yPrimeArr.length-1; i++){
+          System.out.println("upper for loop point is "+yPrimeArr[i]);
+          int j = i+1;
+          while ((j <= yPrimeArr.length-1) && (yPrimeArr[j].getY() <= (yPrimeArr[i].getY()+d))) {
+            System.out.println("yPrimeArr[j] is "+yPrimeArr[j]+" and j is "+j);
+            PointPair currentPair = new PointPair(yPrimeArr[i], yPrimeArr[j]);
+            if(currentPair.closerThan(closest) <1 ) {
+              closest = currentPair;
+              d = closest.getDistance();
+            }
+            j++;
+          }
+        }
+      }
 
 
       //TODO remember to normalize the solution
